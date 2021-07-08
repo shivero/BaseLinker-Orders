@@ -14,6 +14,7 @@ namespace BaseLinker_Orders
         public override void Load()
         {
             Bind<ITest>().To<DTest>();
+            Bind<IOrderManagement>().To<OrderManagement>();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Ninject;
 using Ninject.Modules;
 
@@ -15,10 +16,26 @@ namespace BaseLinker_Orders
         {
             StandardKernel _standardKernel = new StandardKernel(new NinjectBindings());
 
-            var _test = _standardKernel.Get<BTest>();
+            var orderService = _standardKernel.Get<OrderManagement>();
 
-            string msg = _test.Insert();
-            Console.WriteLine(msg);
+            var order = orderService.GetOrders();
+                
+            if (order.orders != null)
+            {
+                Console.WriteLine($"Znaleziono {order.orders.Length} zamówień");
+            }
+            Console.WriteLine(JsonConvert.SerializeObject(order, Formatting.Indented));
+
+
+
+            var newOrder = new Order.AddOrder();
+            newOrder.order_status_id = 50690;
+            newOrder.date_add = DateTimeOffset.Now.ToUnixTimeSeconds();
+            newOrder.admin_comments = "test";
+            var response = orderService.AddOrder(newOrder);
+
+            Console.WriteLine("nowe zamówienie" + JsonConvert.SerializeObject(response));
+            
             Console.ReadLine();
 
         }

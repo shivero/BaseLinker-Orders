@@ -51,8 +51,14 @@
   <ItemGroup>
     <Compile Include="BTest.cs" />
     <Compile Include="DTest.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderBase.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Services\IOrderManagement.cs" />
     <Compile Include="ITest.cs" />
     <Compile Include="NinjectBindings.cs" />
+    <Compile Include="Models\NewOrderStatus.cs" />
+    <Compile Include="Services\OrderManagement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
