@@ -20,7 +20,8 @@ namespace BaseLinker_Orders
             string method = "addOrder";
 
             NameValueCollection parameters = new NameValueCollection();
-            parameters.Add("parameters", JsonConvert.SerializeObject(order));
+            var json = JsonConvert.SerializeObject(order);
+            parameters.Add("parameters", json);
 
             string response = string.Empty;
             using (var wc = new WebClient())
@@ -33,7 +34,7 @@ namespace BaseLinker_Orders
 
         public Order GetOrders()
         {
-            string method = "getOrder";
+            string method = "getOrders";
             string response = string.Empty;
             using (var wc = new WebClient())
             {

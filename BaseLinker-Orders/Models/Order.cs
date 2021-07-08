@@ -8,6 +8,9 @@ namespace BaseLinker_Orders
 
         public class OrderList
         {
+            internal string invoice_county_code;
+            internal string paid;
+
             public int order_id { get; set; }
             public string shop_order_id { get; set; }
             public string external_order_id { get; set; }
@@ -55,7 +58,7 @@ namespace BaseLinker_Orders
             public string order_page { get; set; }
             public string pick_status { get; set; }
             public string pack_status { get; set; }
-            public List<Models.Product> products { get; set; }
+            public Models.Product[] products { get; set; }
         }
         public class AddOrder
         {
@@ -93,7 +96,7 @@ namespace BaseLinker_Orders
             public string want_invoice { get; set; }
             public string extra_field_1 { get; set; }
             public string extra_field_2 { get; set; }
-            public List<Models.Product> Products { get; set; }
+            public Models.Product[] products { get; set; }
         }
     }
 }
