@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Ninject.Modules;
 using Ninject;
+using Ninject.Extensions.Logging;
+using log4net;
+
 namespace BaseLinker_Orders
 {
     class NinjectBindings : NinjectModule
@@ -15,6 +18,7 @@ namespace BaseLinker_Orders
         {
             Bind<ITest>().To<DTest>();
             Bind<IOrderManagement>().To<OrderManagement>();
+            
         }
     }
 }

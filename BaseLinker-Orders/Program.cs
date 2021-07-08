@@ -1,86 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Ninject;
+using Ninject.Extensions.Logging;
 using Ninject.Modules;
 
 namespace BaseLinker_Orders
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             StandardKernel _standardKernel = new StandardKernel(new NinjectBindings());
-
             var orderService = _standardKernel.Get<OrderManagement>();
 
-            var order = orderService.GetOrders();
+            // log4net logging
+            log4net.Config.XmlConfigurator.Configure();
 
-            if (order.orders != null)
+
+            var order = new Order();
+            Task.Run(async () =>
             {
-                Console.WriteLine($"Znaleziono {order.orders.Length} zamówień");
-            }
-            Console.WriteLine(JsonConvert.SerializeObject(order, Formatting.Indented));
+                order = await orderService.GetOrdersAsync();
+            }).GetAwaiter().GetResult();
+
 
             var orderCopy = order?.orders?.LastOrDefault();
-            if (orderCopy == null)
-            {
-                Console.WriteLine("Brak zamówienia do skopiowania");
-            }
 
-            var newOrder = new Order.AddOrder()
+            var newOrder = CopyOrder(orderCopy);
+
+            var response = new NewOrderStatus();
+            Task.Run(async () =>
             {
-                admin_comments = $"Zamówienie utworzone na podstawie {orderCopy.order_id}",
-                currency = orderCopy.currency,
+                response = await orderService.AddOrderAsync(newOrder);
+            }).GetAwaiter().GetResult();
+
+
+            Console.ReadLine();
+
+        }
+
+
+        public static Order.AddOrder CopyOrder(Order.OrderDetails order)
+        {
+            var copy = new Order.AddOrder()
+            {
+                admin_comments = $"Zamówienie utworzone na podstawie {order.Order_id}",
+                currency = order.Currency,
                 date_add = DateTimeOffset.Now.ToUnixTimeSeconds(),
-                delivery_address = orderCopy.delivery_address,
-                delivery_city = orderCopy.delivery_city,
-                delivery_company = orderCopy.delivery_company,
-                delivery_country_code = orderCopy.delivery_company,
-                delivery_fullname = orderCopy.delivery_fullname,
-                delivery_method = orderCopy.delivery_method,
-                delivery_point_address = orderCopy.delivery_point_address,
-                delivery_point_city = orderCopy.delivery_point_city,
-                delivery_point_id = orderCopy.delivery_point_id,
-                delivery_point_name = orderCopy.delivery_point_name,
-                delivery_point_postcode = orderCopy.delivery_point_postcode,
-                delivery_postcode = orderCopy.delivery_postcode,
-                delivery_price = orderCopy.delivery_price,
-                email = orderCopy.email,
-                extra_field_1 = orderCopy.extra_field_1,
-                extra_field_2 = orderCopy.extra_field_2,
-                invoice_address = orderCopy.invoice_address,
-                invoice_city = orderCopy.invoice_city,
-                invoice_company = orderCopy.invoice_company,
-                invoice_country_code = orderCopy.invoice_county_code,
-                invoice_fullname = orderCopy.invoice_fullname,
-                invoice_nip = orderCopy.invoice_nip,
-                invoice_postcode = orderCopy.invoice_postcode,
-                order_status_id = orderCopy.order_status_id,
-                paid = orderCopy.paid,
-                payment_method = orderCopy.payment_method,
-                payment_method_cod = orderCopy.payment_method_cod,
-                phone = orderCopy.phone,
-                user_comments = orderCopy.user_comments,
-                user_login = orderCopy.user_login,
-                want_invoice = orderCopy.want_invoice,
-                products = orderCopy?.products?.Append(new Models.Product
+                delivery_address = order.Delivery_address,
+                delivery_city = order.Delivery_city,
+                delivery_company = order.Delivery_company,
+                delivery_country_code = order.Delivery_company,
+                delivery_fullname = order.Delivery_fullname,
+                delivery_method = order.Delivery_method,
+                delivery_point_address = order.Delivery_point_address,
+                delivery_point_city = order.Delivery_point_city,
+                delivery_point_id = order.Delivery_point_id,
+                delivery_point_name = order.Delivery_point_name,
+                delivery_point_postcode = order.Delivery_point_postcode,
+                delivery_postcode = order.Delivery_postcode,
+                delivery_price = order.Delivery_price,
+                email = order.Email,
+                extra_field_1 = order.Extra_field_1,
+                extra_field_2 = order.Extra_field_2,
+                invoice_address = order.Invoice_address,
+                invoice_city = order.Invoice_city,
+                invoice_company = order.Invoice_company,
+                invoice_country_code = order.Invoice_county_code,
+                invoice_fullname = order.Invoice_fullname,
+                invoice_nip = order.Invoice_nip,
+                invoice_postcode = order.Invoice_postcode,
+                order_status_id = order.Order_status_id,
+                paid = order.Paid,
+                payment_method = order.Payment_method,
+                payment_method_cod = order.Payment_method_cod,
+                phone = order.Phone,
+                user_comments = order.User_comments,
+                user_login = order.User_login,
+                want_invoice = order.Want_invoice,
+                products = order?.Products?.Append(new Models.Product
                 {
                     name = "Gratis",
                     price_brutto = 1.00f
                 }).ToArray()
             };
-
-            var response = orderService.AddOrder(newOrder);
-
-            Console.WriteLine("nowe zamówienie" + JsonConvert.SerializeObject(response));
-
-            Console.ReadLine();
-
+            return copy;
         }
+
+
     }
 }

@@ -8,7 +8,7 @@ namespace BaseLinker_Orders
 {
     interface IOrderManagement
     {
-        Order GetOrders();
-        NewOrderStatus AddOrder(Order.AddOrder orderList);
+        Task<Order> GetOrdersAsync();
+        Task<NewOrderStatus> AddOrderAsync(Order.AddOrder orderList);
     }
 }

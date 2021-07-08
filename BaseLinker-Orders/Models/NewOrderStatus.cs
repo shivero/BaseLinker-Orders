@@ -1,8 +1,7 @@
 ﻿namespace BaseLinker_Orders
 {
-    public class NewOrderStatus
+    public class NewOrderStatus : OrderBase
     {
-        public string Status { get; set; }
         public int Order_Id { get; set; }
     }
 }
