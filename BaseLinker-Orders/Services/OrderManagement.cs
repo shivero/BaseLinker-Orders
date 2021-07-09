@@ -30,9 +30,8 @@ namespace BaseLinker_Orders
             NameValueCollection parameters = new NameValueCollection();
             try
             {
-                var newOrderJson = JsonConvert.SerializeObject(order,Formatting.Indented);
+                var newOrderJson = JsonConvert.SerializeObject(order, Formatting.Indented);
                 parameters.Add("parameters", newOrderJson);
-                _logger.Info($"New order details: {newOrderJson}");
                 string response = await GetResponse(method, parameters);
                 var newOrder = JsonConvert.DeserializeObject<NewOrderStatus>(response);
                 _logger.Info($"Creating new order status: {newOrder.status} with Id {newOrder.Order_Id}");
@@ -45,14 +44,15 @@ namespace BaseLinker_Orders
             }
         }
 
-        public async Task<Order> GetOrdersAsync()
+        public async Task<Order> GetOrderAsync(int orderId)
         {
             string method = "getOrders";
-            _logger.Info("Downloading Orders");
-
             try
             {
-                string response = await GetResponse(method, null);
+                NameValueCollection parameters = new NameValueCollection();
+                string json = JsonConvert.SerializeObject(new { order_id = orderId });
+                parameters.Add("parameters", json);
+                string response = await GetResponse(method, parameters);
 
                 var orders = JsonConvert.DeserializeObject<Order>(response);
 
@@ -77,15 +77,24 @@ namespace BaseLinker_Orders
             try
             {
                 string response;
+                byte[] bytes = null;
                 NameValueCollection values = GetRequiredParams(method);
-                if (parameters != null || parameters?.Count > 0)
+
+                if (parameters != null && parameters?.Count > 0)
                 {
                     values.Add(parameters);
                 }
-                byte[] bytes = null;
+
+                LogRequestParameters(values);
+
                 using (var wc = new WebClient())
                 {
                     bytes = await wc.UploadValuesTaskAsync(new Uri(BASEURL), "POST", values);
+                }
+                if (bytes == null)
+                {
+                    _logger.Info($"BaseLinker API response is empty");
+                    throw new ArgumentException("BaseLinker API no response", nameof(bytes));
                 }
                 response = Encoding.UTF8.GetString(bytes);
                 return response;
@@ -95,6 +104,12 @@ namespace BaseLinker_Orders
                 _logger.Fatal(e, "Error getting response");
                 throw;
             }
+        }
+
+        private void LogRequestParameters(NameValueCollection values)
+        {
+            var dict = values.AllKeys.ToDictionary(t => t, t => values[t]);
+            _logger.Info($"Request parameters: {string.Join(" ", dict)}");
         }
 
         private NameValueCollection GetRequiredParams(string method)

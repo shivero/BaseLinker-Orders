@@ -28,12 +28,13 @@ namespace BaseLinker_Orders
             var order = new Order();
             Task.Run(async () =>
             {
-                order = await orderService.GetOrdersAsync();
+                order = await orderService.GetOrderAsync(7546601);
             }).GetAwaiter().GetResult();
 
 
             var orderCopy = order?.orders?.LastOrDefault();
 
+            // duplicate order with additional properties
             var newOrder = CopyOrder(orderCopy);
 
             var response = new NewOrderStatus();
@@ -89,7 +90,8 @@ namespace BaseLinker_Orders
                 products = order?.Products?.Append(new Models.Product
                 {
                     name = "Gratis",
-                    price_brutto = 1.00f
+                    price_brutto = 1.00f,
+                    quantity = 1
                 }).ToArray()
             };
             return copy;
