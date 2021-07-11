@@ -97,7 +97,7 @@ namespace BaseLinker_Orders
             public string want_invoice { get; set; }
             public string extra_field_1 { get; set; }
             public string extra_field_2 { get; set; }
-            public Models.Product[] products { get; set; }
+            public List<Models.Product> products { get; set; }
         }
     }
 }
