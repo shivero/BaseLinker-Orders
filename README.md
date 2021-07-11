@@ -24,3 +24,4 @@ Application progress logging is configured to show messages in console and file 
 2. WebClient - creating requests to BaseLinker API
 3. Newtonsoft.Json - a popular high-performance JSON framework for .NET
 4. Log4net - for implementing log messages in your application
+5. AutoMapper - an object-object mapper
